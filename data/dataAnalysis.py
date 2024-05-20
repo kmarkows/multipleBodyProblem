@@ -6,9 +6,6 @@ with open('./data/positionData.txt', 'r') as file:
     for line in file:
         np.position.append([float(number) for number in line.split()])
 
-
-# plt.scatter(np.position[0][0], np.position[0][1])
-
 t = 0
 for pos in np.position:
     np.bodiesX = []
@@ -18,9 +15,6 @@ for pos in np.position:
             np.bodiesX.append(pos[i])
         else:
             np.bodiesY.append(pos[i])
-    
-    # print(np.bodiesX)
-    # print(np.bodiesY)
 
     if ( t < 10):
         plotSavingDirectory = "./data/plotsForGif/positions000"
@@ -35,8 +29,8 @@ for pos in np.position:
         plotSavingDirectory += str(t)
 
     plt.scatter(np.bodiesX, np.bodiesY)
-    plt.xlim(-1, 1)
-    plt.ylim(-1, 1)
+    plt.xlim(-2, 2)
+    plt.ylim(-2, 2)
     plt.savefig(plotSavingDirectory)
     plt.close()
     t += 1

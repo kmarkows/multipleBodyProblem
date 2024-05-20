@@ -26,8 +26,8 @@ template <uint8_t nBodies> class MultipleBodyProblem
 		this->nt = nt;
 		for (uint8_t i = 0; i < size; i++)
 		{
-            bodiesBefore.at(i).pos = startingPositions.at(i);
-            bodiesBefore.at(i).v = startingVelocities.at(i);
+			bodiesBefore.at(i).pos = startingPositions.at(i);
+			bodiesBefore.at(i).v = startingVelocities.at(i);
 			bodiesBefore.at(i).id = i;
 			bodiesAfter.at(i).id = i;
 			bodiesBefore.at(i).mass = masses.at(i);
@@ -37,7 +37,6 @@ template <uint8_t nBodies> class MultipleBodyProblem
 
 	void calculateRadiousesAndSinCosAlpha()
 	{
-		// std::cout << " --------- calculateRadiousesAndSinCosAlpha --------- " << std::endl;
 		for (uint8_t i = 0; i < size; i++)
 		{
 			for (uint8_t j = 0; j < size; j++)
@@ -46,28 +45,16 @@ template <uint8_t nBodies> class MultipleBodyProblem
 				{
 					bodiesBefore.at(i).radiuses.at(j) = 0;
 					bodiesBefore.at(i).sinAlpha.at(j) = 0;
-                    bodiesBefore.at(i).cosAlpha.at(j) = 0;
-					// std::cout << "if " << (int)i << " " << (int)j << "    " << bodiesBefore.at(i).radiuses.at(j) << "
-					// " <<
-					//                                                              bodiesBefore.at(i).sinAlpha.at(j) <<
-					//                                                              " " <<
-					//                                                              bodiesBefore.at(i).cosAlpha.at(j) <<
-					//                                                              std::endl;
+					bodiesBefore.at(i).cosAlpha.at(j) = 0;
 				}
 				else
 				{
 					double deltaX = bodiesBefore.at(j).pos.x - bodiesBefore.at(i).pos.x;
 					double deltaY = bodiesBefore.at(j).pos.y - bodiesBefore.at(i).pos.y;
-					// std::cout << "deltaX " << deltaX << " " << "DeltaY " << deltaY << std::endl;
+
 					bodiesBefore.at(i).radiuses.at(j) = sqrt((deltaX) * (deltaX) + (deltaY) * (deltaY));
 					bodiesBefore.at(i).sinAlpha.at(j) = deltaY / bodiesBefore.at(i).radiuses.at(j);
 					bodiesBefore.at(i).cosAlpha.at(j) = deltaX / bodiesBefore.at(i).radiuses.at(j);
-					// std::cout << "else " << (int)i << " " << (int)j << "    " << bodiesBefore.at(i).radiuses.at(j) <<
-					// " " <<
-					//                                                              bodiesBefore.at(i).sinAlpha.at(j) <<
-					//                                                              " " <<
-					//                                                              bodiesBefore.at(i).cosAlpha.at(j) <<
-					//                                                              std::endl;
 				}
 			}
 		}
@@ -75,7 +62,6 @@ template <uint8_t nBodies> class MultipleBodyProblem
 
 	void calculateForce()
 	{
-		// std::cout << " --------- calculateForce --------- " << std::endl;
 		for (uint8_t i = 0; i < size; i++)
 		{
 			for (uint8_t j = 0; j < size; j++)
@@ -83,8 +69,6 @@ template <uint8_t nBodies> class MultipleBodyProblem
 				if (i == j)
 				{
 					bodiesBefore.at(i).forces.at(j).setZeros();
-					// std::cout << "if " <<  (int)i << " " << (int)j << " " << bodiesBefore.at(i).forces.at(j).x << " "
-					// << bodiesBefore.at(i).forces.at(j).y << " " << std::endl;
 				}
 				else
 				{
@@ -94,8 +78,6 @@ template <uint8_t nBodies> class MultipleBodyProblem
 					bodiesBefore.at(i).forces.at(j).y =
 						bodiesBefore.at(i).sinAlpha.at(j) * bodiesBefore.at(j).mass * bodiesBefore.at(i).mass *
 						gravConst / (bodiesBefore.at(i).radiuses.at(j) * bodiesBefore.at(i).radiuses.at(j));
-					// std::cout << "else " << (int)i << " " << (int)j << " " << bodiesBefore.at(i).forces.at(j).x << "
-					// " << bodiesBefore.at(i).forces.at(j).y << " " << std::endl;
 				}
 			}
 		}
@@ -106,38 +88,24 @@ template <uint8_t nBodies> class MultipleBodyProblem
 
 		for (uint8_t i = 0; i < size; i++)
 		{
-			// std::cout << "bodyId " << (int)bodiesBefore.at(i).id << std::endl;
 			Force sumForces{};
 			for (auto force : bodiesBefore.at(i).forces)
 			{
 				sumForces.x += force.x;
 				sumForces.y += force.y;
 			}
-			// std::cout << "sumForces " << sumForces.x << " " << sumForces.y << std::endl;
-
 			Velocity afterVelocity{};
 			afterVelocity.x = bodiesBefore.at(i).v.x + sumForces.x * dt / bodiesBefore.at(i).mass;
 			afterVelocity.y = bodiesBefore.at(i).v.y + sumForces.y * dt / bodiesBefore.at(i).mass;
-			// std::cout << "afterVelocity " << afterVelocity.x << " " << afterVelocity.y << std::endl;
 
 			Position afterPosition{};
 			afterPosition.x = bodiesBefore.at(i).pos.x + bodiesBefore.at(i).v.x * dt;
 			afterPosition.y = bodiesBefore.at(i).pos.y + bodiesBefore.at(i).v.y * dt;
-			// std::cout << "afterPosition " << afterPosition.x << " " << afterPosition.y << std::endl;
 
 			bodiesAfter.at(i).v = afterVelocity;
-			// std::cout << "bodiesAfter.at(i).v " << bodiesAfter.at(i).v.x  << " " << bodiesAfter.at(i).v.y  <<
-			// std::endl;
 			bodiesAfter.at(i).pos = afterPosition;
-			// std::cout << "bodiesAfter.at(i).pos " << bodiesAfter.at(i).pos.x  << " " << bodiesAfter.at(i).pos.y  <<
-			// std::endl;
-
-			// saveToFile();
-			// rewrite BodiesBefore and BodiesAfter
 		}
 		bodiesBefore = bodiesAfter;
-		// std::cout << "bodiesBefore.at(i).pos after rewrite " << bodiesBefore.at(0).pos.x  << " " <<
-		// bodiesBefore.at(0).pos.y  << std::endl;
 		for (auto body : bodiesAfter)
 		{
 			body.pos.setZeros();
@@ -150,8 +118,6 @@ template <uint8_t nBodies> class MultipleBodyProblem
 				body.radiuses.at(i) = 0;
 			}
 		}
-		// std::cout << "bodiesAfter.at(i).pos after rewrite " << bodiesAfter.at(0).pos.x  << " " <<
-		// bodiesAfter.at(0).pos.y  << std::endl;
 	}
 
 	void doTimeIterations()
@@ -171,8 +137,6 @@ template <uint8_t nBodies> class MultipleBodyProblem
 
 	void pushDataVector(uint32_t t)
 	{
-		// std::cout << " --------- pushDataVector --------- " << std::endl;
-		// std::cout << "timeIteration: " << t << std::endl;
 		std::array<Position, nBodies> positionsDataInOneTimeIteration{};
 		for (uint8_t i = 0; i < size; i++)
 		{
